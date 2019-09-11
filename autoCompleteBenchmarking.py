@@ -2,8 +2,8 @@ import os,sys
 import requests
 import json
 
-G_URL="https://maps.googleapis.com/maps/api/place/autocomplete/json?components=country:uae"
-G_KEY = "AIzaSyAHGVcJiSsxJJLABxxYV202bXUWwuw5pZU"
+G_URL="https://maps.googleapis.com/maps/api/place/autocomplete/json?"
+G_KEY = REPLACE WITH GOOGLE KEY
 
 #Here url and credentials
 H_URL="http://autocomplete.geocoder.api.here.com/6.2/suggest.json"
@@ -31,7 +31,7 @@ def saveToTextFile(data,keyword,tech) :
     json.dump(data, f)
 
 def getTechArray() :
-  return ["remoteServer","hereServer"]
+  return ["remoteServer","hereServer","googleServer"]
 
 #create dir if it doesn't exist
 def checkAndCreateDirectories(DirNames):
@@ -64,7 +64,9 @@ def getKeywordInfo(keyword,tech) :
     if tech == 'googleServer' :
         print("got google server")
         params = {'input': keyword,
-                    "key": G_KEY
+                    "key": G_KEY,
+                    "location":'24.466667,54.366669',
+                    "radius" : 1000000
         }
         URL = G_URL
     elif tech == 'hereServer' :
@@ -147,8 +149,11 @@ if __name__ == "__main__" :
   DirNames = ['remoteServer', 'hereServer', 'googleServer', 'results']
   techArray = getTechArray()
   #action - download , process, graph, all
-  action = 'process'
+  action = 'download'
   if action == 'download' :
       downloadKeywordInfo()
   elif action == 'process' :
+      processKeywordInfo()
+  elif action == 'all' :
+      downloadKeywordInfo()
       processKeywordInfo()
