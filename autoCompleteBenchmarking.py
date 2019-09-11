@@ -2,9 +2,14 @@ import os,sys
 import requests
 import json
 
+#flask imports
+import jinja2
+from flask import Flask, render_template,request
+from wtforms import Form, RadioField,validators
+
+
 G_URL="https://maps.googleapis.com/maps/api/place/autocomplete/json?"
-# G_KEY = REPLACE WITH GOOGLE KEY
-G_KEY = "AIzaSyBzLyapURKSuEAgCSu_mP3NVDlVmcRamFg"
+G_KEY = REPLACE WITH GOOGLE KEY
 
 #Here url and credentials
 H_URL="http://autocomplete.geocoder.api.here.com/6.2/suggest.json"
@@ -122,6 +127,16 @@ def processJSONFiles(keyword,tech):
             out.append(suggestion['description'])
     return out
 
+def getDataFromResults():
+    resultsFile = os.path.join('results/results.csv')
+    fHandler = open(resultsFile)
+    allLines = list()
+    for line in fHandler :
+        allLines.append(line)
+    #ignore first first lines - since it contains metadata
+    data = allLines[1:]
+    return data
+
 def processKeywordInfo():
   keywordList = readKeywordsFromFile()
   techArray = getTechArray()
@@ -137,13 +152,13 @@ def processKeywordInfo():
 
   #process data from
   for keyword in keywordList :
-    dataToWrite = [keyword]
+    dataToWrite = []
     for tech in techArray:
       result = processJSONFiles(keyword,tech)
       print("{0} -- {1}".format(tech,result))
       dataToWrite.append(','.join(result))
       dataToWrite.append(SEPERATOR)
-    fHandler.write(','.join(dataToWrite)+'\n')
+    fHandler.write(keyword + '@' +','.join(dataToWrite)+'\n')
     print("completed processing for {0}".format(keyword))
 
 ###############################################
