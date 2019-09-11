@@ -3,7 +3,8 @@ import requests
 import json
 
 G_URL="https://maps.googleapis.com/maps/api/place/autocomplete/json?"
-G_KEY = REPLACE WITH GOOGLE KEY
+# G_KEY = REPLACE WITH GOOGLE KEY
+G_KEY = "AIzaSyBzLyapURKSuEAgCSu_mP3NVDlVmcRamFg"
 
 #Here url and credentials
 H_URL="http://autocomplete.geocoder.api.here.com/6.2/suggest.json"
@@ -115,6 +116,10 @@ def processJSONFiles(keyword,tech):
         suggestionList = data['features']
         for suggestion in suggestionList :
             out.append(suggestion['properties']['label'])
+    elif tech == 'googleServer' :
+        suggestionList = data['predictions']
+        for suggestion in suggestionList :
+            out.append(suggestion['description'])
     return out
 
 def processKeywordInfo():
@@ -149,7 +154,7 @@ if __name__ == "__main__" :
   DirNames = ['remoteServer', 'hereServer', 'googleServer', 'results']
   techArray = getTechArray()
   #action - download , process, graph, all
-  action = 'download'
+  action = 'all'
   if action == 'download' :
       downloadKeywordInfo()
   elif action == 'process' :
