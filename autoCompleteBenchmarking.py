@@ -12,7 +12,9 @@ G_URL="https://maps.googleapis.com/maps/api/place/autocomplete/json?"
 G_KEY = REPLACE WITH GOOGLE KEY
 
 #Here url and credentials
-H_URL="http://autocomplete.geocoder.api.here.com/6.2/suggest.json"
+# ref - https://developer.here.com/documentation/places/topics/quick-start-find-text-string.html
+# we use x-port-view to restrict the view
+H_URL="https://places.cit.api.here.com/places/v1/autosuggest?"
 H_APP_ID = "XyifzbyPyVEWTOQF4tDK"
 H_APP_CODE = "s2N9-uw08-1zQe06blQYtg"
 
@@ -71,16 +73,16 @@ def getKeywordInfo(keyword,tech) :
         print("got google server")
         params = {'input': keyword,
                     "key": G_KEY,
-                    "location":'24.466667,54.366669',
-                    "radius" : 1000000
+                    "location":'24.466667,54.366669', # location and radius is used to restrict the results
+                    "radius" : 100000 # in meters
         }
         URL = G_URL
     elif tech == 'hereServer' :
         print("got here server")
-        params = {'query': keyword,
+        params = {'q': keyword,
                   "app_id": H_APP_ID,
                   "app_code": H_APP_CODE,
-                  "country" : "ARE"
+                  'X-Map-Viewport': '51.4161,22.6316,56.0174,25.4529' # it is used for restriction - bbox is for abudhabi state
                   }
         URL = H_URL
     elif tech == 'remoteServer' :
@@ -114,9 +116,11 @@ def processJSONFiles(keyword,tech):
     fHandler.close()
     out = list()
     if tech == 'hereServer' :
-        suggestionList = data['suggestions']
-        for suggestion in suggestionList :
-            out.append(suggestion['label'])
+        suggestionList = data['results']
+        for suggestion in range(len(suggestionList)) :
+            #restricting the user to 10 results only
+            if suggestion < 10 :
+                out.append(suggestionList[suggestion]['title'])
     elif tech == 'remoteServer' :
         suggestionList = data['features']
         for suggestion in suggestionList :
@@ -135,7 +139,17 @@ def getDataFromResults():
         allLines.append(line)
     #ignore first first lines - since it contains metadata
     data = allLines[1:]
-    return data
+    returnData = list()
+    for line in data :
+        d = line.split('@')
+        returnData.append({
+            'key' : d[0],
+            'remote' : d[1],
+            'here' : d[2],
+            'google' : d[3]
+        })
+    print(len(returnData))
+    return returnData
 
 def processKeywordInfo():
   keywordList = readKeywordsFromFile()
@@ -177,3 +191,5 @@ if __name__ == "__main__" :
   elif action == 'all' :
       downloadKeywordInfo()
       processKeywordInfo()
+  elif action == 'data' :
+      getDataFromResults()

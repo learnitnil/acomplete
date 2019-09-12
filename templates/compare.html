@@ -4,6 +4,64 @@
     </title>
 
     <body>
+        <h3>
         comparing the auto search results for VM Server, Google and Here Server
+        </h3>
+
+        <!-- example table -->
+        <!-- <table>
+            <caption>Key : </caption>
+            <tr>
+                <th> VM </th>
+                <th> Google </th>
+                <th> Here </th>
+            </tr>
+
+            <tr>
+                <td>
+                    Hi <br>
+                    Hello
+                 </td>
+                <td> There </td>
+                <td> How do you do ? </td>
+            </tr>
+        </table> -->
+
+
+        {% for result in results %}
+        <table>
+            <caption> <strong> Key :  {{result['key']}} </strong> </caption>
+              <colgroup>
+                <col style="width:33%">
+                <col style="width:33%">
+                <col style="width:34%">
+            </colgroup>
+            <tr>
+                <th> VM </th>
+                <th> Google </th>
+                <th> Here </th>
+            </tr>
+
+            <tr>
+                <td>
+                {% for item in result['remote'].split(',') %}
+                {{item}} <br>
+                {%endfor %}
+                </td>
+                <td>
+                {% for item in result['google'].split(',') %}
+                {{item}} <br>
+                {%endfor %}
+                </td>
+                <td>
+                {% for item in result['here'].split(',') %}
+                {{item}} <br>
+                {%endfor %}
+                </td>
+            </tr>
+        </table>
+        {%endfor %}
+
+
     </body>
 </html>

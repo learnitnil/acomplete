@@ -14,7 +14,9 @@ def info():
 
 @app.route("/",methods=['GET','POST'])
 def compare():
-    return render_template('compare.html')
+    results = getDataFromResults()
+    print("number of keywords are {}".format(len(results)))
+    return render_template('compare.html',results=results)
 
 #def extractLatLons():
 if __name__ == '__main__':
